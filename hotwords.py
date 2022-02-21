@@ -2,10 +2,15 @@ import re
 import autoit
 import time
 
-hotwords = ['por favor', 'comando', 'ahora', 'ok google']
+hotwords = ['por favor', 'comando', 'ahora', 'ok google','ok']
 again_words = ['otra','otra vez']
 reload_words = ['recargar módulos']
-#primitives   
+# nl numbers
+numbers = {
+   'uno':1,'dos':2,'tres':3,'cuatro':4,'cinco':5,
+   'seis':6, 'siete':7, 'ocho':8, 'nueve':9, 'diez':10,
+   'once':11, 'doce':12,'trece':13,'catorce':14,'quince':15
+}
 
 def run_program(name):
     print(f"[+]Executing {name}")
@@ -16,7 +21,7 @@ def run_program(name):
 
 def run_process(process_name):
     print(f"[+]Runing process {process_name}")
-    autoit.run(f"cmd /c start {process_name}")
+    return lambda: autoit.run(f"cmd /c start {process_name}")
     
 def ctrl_num(num : int):
     print(f"[+]Sending CTRL+{num}")
@@ -36,13 +41,6 @@ def vol_up(num : int):
 def vol_down(num : int):
     autoit.send("{VOLUME_DOWN}"*num)
 
-# nl numbers
-numbers = {
-   'uno':1,'dos':2,'tres':3,'cuatro':4,'cinco':5,
-   'seis':6, 'siete':7, 'ocho':8, 'nueve':9, 'diez':10,
-   'once':11, 'doce':12,'trece':13,'catorce':14,'quince':15
-}
-
 def find_into_str(string, word_list):
     return re.findall(f"({or_regx_pattern(word_list)})\s(.+)", string)
 
@@ -53,22 +51,11 @@ def get_int_args(string):
 def detect_hotword(string, hotwords=hotwords):
     return find_into_str(string, hotwords)
 
-
 # https://www.autoitscript.com/autoit3/docs/appendix/SendKeys.htm
 #^ Ctrl, # WIN, ! Alt, + TAB, SHIFT are equal to uppercase letter
 action_list = {
-    "abrir la consola":{
-        'type':'run_func', 
-        'func':lambda: run_program('cmd.exe')
-    },
-    "ver la pestaña":{
-        'type':'int_arg_func',
-        'func':ctrl_num
-    },
-    "abrir bloc de notas":{
-        'type':'run_func', 
-        'func':lambda: run_process("notepad")
-    },
+    "abrir la consola":run_process('cmd.exe'),
+    "ver la pestaña":ctrl_num,
     "siguiente escritorio":"^#{RIGHT}",
     "anterior escritorio":"^#{LEFT}",
     "minimizar ventanas":"#m",
@@ -82,8 +69,8 @@ action_list = {
     "reabrir pestaña":"^T",
     "abajo":"{DOWN}",
     "arriba":"{UP}",
-    "subir volumen en":{"type":"int_arg_func", "func":vol_up},
-    "bajar volumen en":{"type":"int_arg_func", "func":vol_down},
+    "subir volumen en":vol_up,
+    "bajar volumen en":vol_down,
     "silenciar sonido":"{VOLUME_MUTE}",
     "regresar sonido":"{VOLUME_MUTE}",
     "siguiente canción":"{MEDIA_NEXT}",
@@ -98,34 +85,36 @@ action_list = {
     "recargar página":"{BROWSER_REFRESH}",
     "cerrar ventana":"!{F4}",
     "escapar":"{ESC}",
-    "abrir whatsapp":{"type":"exc_func", "func": lambda: run_process("https://web.whatsapp.com/")},
-    "abrir youtube":{"type":"exc_func", "func": lambda: run_process("https://youtube.com")},
-    "abrir el traductor":{"type":"exc_func", "func": lambda: run_process("https://deepl.com")}
+    "abrir whatsapp":run_process("https://web.whatsapp.com/"),
+    "abrir youtube":run_process("https://youtube.com"),
+    "abrir el traductor":run_process("https://deepl.com"),
+    "abrir bloc de notas":run_process("notepad")
 }
 
-
+def find(dict_, key_):
+    return list(map(lambda el: key_ in el))
+    
 def run(cmd):
     # cmd with int arg (ex: run the tab five)
     if argv := get_int_args(cmd):
        argv = argv[0]
        print("[+]Executing command with int arg.")
-       line = argv[0].strip()
-       if action := action_list.get(line):
-          action['func'](numbers[argv[1]])
-          
+       command = argv[0].strip()
+       if action := action_list.get(command):
+          action(numbers[argv[1].strip()])
+          return True
+    # simple cmd
     elif cmd in action_list:
         cmd_let = action_list[cmd]
-        if type(cmd_let) == dict and cmd_let['type'] == 'int_arg_func':
-            return False
-        if ((type(cmd_let) == dict)
-            and (func := cmd_let.get('func'))):
-               func() 
-        else:
-            # simple hotkey 
+        if type(cmd_let) == str:
             exc_hotkey(cmd_let)
-    else:
-        return False
-    return True
+        else:
+            try:
+                cmd_let()
+            except TypeError:
+                pass # without valid argument
+                
+    return False
 
 if __name__ == '__main__':
-    pass
+    run("subir volumen en cinco")

@@ -14,6 +14,10 @@ print("Available inputs devices, please select your input device (choice with '>
 print(sd.query_devices())
 DEVICE_INPUT_NUMBER = int(input("[INPUT DEVICE NUMBER]:"))
 
+# status
+DONE_SENTENCE = False
+PREV_SENTENCE = ""
+PREV_SENTENCE_EXEC_CMD = ""
 
 def callback(indata, frames, time, status):
     """This is called (from a separate thread) for each audio block."""
@@ -21,15 +25,10 @@ def callback(indata, frames, time, status):
         print(status, file=sys.stderr)
     q.put(bytes(indata))
 
-
 def reload_hotwords():
     importlib.reload(hotwords)
-
-DONE_SENTENCE = False
-PREV_SENTENCE = ""
-PREV_SENTENCE_EXEC_CMD = ""
-
-def detect_hotword(entry):
+    
+def process_sentence(entry):
     global PREV_SENTENCE, PREV_SENTENCE_EXEC_CMD
     # repeat last command
     if entry in hotwords.again_words:
@@ -80,11 +79,8 @@ try:
                     partial = rec.PartialResult()
                     partial_json = json.loads(partial)
                     if(chunk := partial_json.get("partial")):
-                        detect_hotword(chunk)
+                        process_sentence(chunk)
                         DONE_SENTENCE = False
-               #if dump_fn is not None:
-               #    dump_fn.write(data)
-
 except KeyboardInterrupt:
     print('\nDone')
     sys.exit(0)
