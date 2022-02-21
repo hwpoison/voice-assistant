@@ -5,8 +5,8 @@ import sounddevice as sd
 import vosk
 import sys
 import json 
-import importlib 
-import hotwords 
+import processor 
+import commands
 
 q = queue.Queue()
 
@@ -16,43 +16,23 @@ DEVICE_INPUT_NUMBER = int(input("[INPUT DEVICE NUMBER]:"))
 
 # status
 DONE_SENTENCE = False
-PREV_SENTENCE = ""
-PREV_SENTENCE_EXEC_CMD = ""
+PREV_SENTENCE = None
+
+def process_entry(entry):
+    global PREV_SENTENCE
+    if entry and PREV_SENTENCE != entry: # detect hotword and prevent repeat
+        if entry in commands.again_words:
+            processor.repeat_last_command()
+        else:
+            processor.run_command(entry)
+        PREV_SENTENCE = entry
 
 def callback(indata, frames, time, status):
     """This is called (from a separate thread) for each audio block."""
     if status:
         print(status, file=sys.stderr)
     q.put(bytes(indata))
-
-def reload_hotwords():
-    importlib.reload(hotwords)
-    
-def process_sentence(entry):
-    global PREV_SENTENCE, PREV_SENTENCE_EXEC_CMD
-    # repeat last command
-    if entry in hotwords.again_words:
-        if DONE_SENTENCE:
-            print("[+]Repeating command ", PREV_SENTENCE_EXEC_CMD)
-            hotwords.run(PREV_SENTENCE_EXEC_CMD)
-    
-    if entry in hotwords.reload_words:
-        if PREV_SENTENCE != entry:
-            print("[!]Reloading 'hotwords' module")
-            importlib.reload(hotwords)
-            PREV_SENTENCE = entry
-            
-    # process new command
-    entry = hotwords.detect_hotword(entry)
-    if entry: # detect hotwor
-        command = entry[0][1]
-        if PREV_SENTENCE != command:
-            print(f"[*]Executing {command}")
-            exec = hotwords.run(command)
-            if exec:
-                PREV_SENTENCE_EXEC_CMD =  command
-            PREV_SENTENCE = command
-
+  
 try:
     model = "model"
     device_info = sd.query_devices(DEVICE_INPUT_NUMBER, 'input')
@@ -78,8 +58,8 @@ try:
                 else:
                     partial = rec.PartialResult()
                     partial_json = json.loads(partial)
-                    if(chunk := partial_json.get("partial")):
-                        process_sentence(chunk)
+                    if(partial_entry := partial_json.get("partial")):
+                        process_entry(partial_entry)
                         DONE_SENTENCE = False
 except KeyboardInterrupt:
     print('\nDone')
