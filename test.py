@@ -9,9 +9,10 @@ class Test(unittest.TestCase):
         commands.numbers = [
             'zero','one','two','three','four',
             'five','six','seven','eight','nine','ten']
-        commands.action_list = {
+        commands.command_list = {
             'view the thing':commands.ctrl_num,
-            'press some key':"{UP}"
+            'press some key':"{UP}",
+            ('press space', 'space'): "{SPACE}"
         }
         
     def test_or_regx_pattern(self):
@@ -21,6 +22,12 @@ class Test(unittest.TestCase):
         expected = 'word1|word2|word3|word4'
         self.assertEqual(result, expected)
     
+    def test_find_command(self):
+       entry = "space"
+       result = processor.find_command(entry)
+       expected = '{SPACE}'
+       self.assertEqual(result, expected)
+       
     def test_filter_hotword(self):
         entry = "hey google do it!"
         result = processor.filter_hotword(entry)
@@ -51,7 +58,7 @@ class Test(unittest.TestCase):
     
     def test_press_key_command(self):
         """ Command with key to press """
-        entry = 'okey google press some key'
+        entry = 'okey google press space'
         result = processor.run_command(entry, True)
         self.assertEqual(result, True)
     

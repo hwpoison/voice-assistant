@@ -2,7 +2,7 @@ import re
 import time
 import importlib
 import commands
-from utils import press_keys 
+from utils import press_keys
 
 LAST_EXECUTED_COMMAND = None
 
@@ -28,9 +28,17 @@ def reload_commands_module():
     print("[*]Reloading 'commands' module.")
     importlib.reload(commands)
 
-def find(dict_, key_):
-    return list(map(lambda el: key_ in el))
-    
+
+def in_str_or_tuple(keyword, key):
+    if type(key) == str:
+        return key == keyword
+    else:
+        return keyword in key
+        
+def find_command(key_):
+    cmd_key = list(filter(lambda el: in_str_or_tuple(key_, el), commands.command_list))
+    return commands.command_list.get(cmd_key[0]) if cmd_key else None 
+
 def run_command(command, check_hotword=True) -> bool:
     global LAST_EXECUTED_COMMAND
     
@@ -39,29 +47,31 @@ def run_command(command, check_hotword=True) -> bool:
         command = filter_hotword(command)
         if not command:
             return False
-    
-    if command in commands.reload_words: # special reload words
+            
+    # special reload words
+    if command in commands.reload_words: 
         reload_commands_module()
         return True 
+  
     # cmd with int arg (ex: run the tab five)
-    elif argv := get_int_args(command):
+    if argv := get_int_args(command):
        argv = argv[0]
        print(f"[*]Executing {command} (Arg type)")
        command = argv[0].strip()
        argument = nlnumber_to_int(argv[1].strip())
-       if to_execute := commands.action_list.get(command):
+       if to_execute := find_command(command):
           if type(to_execute) == str:
             press_keys(to_execute, repeat=argument)
           else:
             to_execute(argument) # custom function with arg
     # simple cmd (ex: mute sound)
-    elif cmd_let := commands.action_list.get(command):
+    elif to_execute := find_command(command):
         print(f"[*]Executing {command}")
-        if type(cmd_let) == str:
-            press_keys(cmd_let)
+        if type(to_execute) == str:
+            press_keys(to_execute)
         else:
             try:
-                cmd_let() # custom function
+                to_execute() # custom function
             except TypeError:
                 return False # without valid argument
                 
