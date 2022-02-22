@@ -2,7 +2,7 @@ import re
 import time
 import importlib
 import commands
-from utils import press_keys
+from utils import press_keys, get_win_title
 
 LAST_EXECUTED_COMMAND = None
 
@@ -27,8 +27,7 @@ def filter_hotword(string : str):
 def reload_commands_module():
     print("[*]Reloading 'commands' module.")
     importlib.reload(commands)
-
-
+    
 def in_str_or_tuple(keyword, key):
     if type(key) == str:
         return key == keyword
@@ -39,8 +38,17 @@ def find_command(key_):
     cmd_key = list(filter(lambda el: in_str_or_tuple(key_, el), commands.command_list))
     return commands.command_list.get(cmd_key[0]) if cmd_key else None 
 
+def get_command_context(): # check context based on win title
+    win_title = get_win_title()
+    for context, apps in commands.context_list.items():
+        if win_title.endswith(tuple(apps)):
+            return context 
+    return 'UNKNOW'
+
 def run_command(command, check_hotword=True) -> bool:
     global LAST_EXECUTED_COMMAND
+    command = command.strip()
+    arg_number = None
     
     # check and filter hotword
     if check_hotword:
@@ -52,36 +60,43 @@ def run_command(command, check_hotword=True) -> bool:
     if command in commands.reload_words: 
         reload_commands_module()
         return True 
-  
+    
     # cmd with int arg (ex: run the tab five)
     if argv := get_int_args(command):
-       argv = argv[0]
-       print(f"[*]Executing {command} (Arg type)")
-       command = argv[0].strip()
-       argument = nlnumber_to_int(argv[1].strip())
-       if to_execute := find_command(command):
-          if type(to_execute) == str:
-            press_keys(to_execute, repeat=argument)
-          else:
-            to_execute(argument) # custom function with arg
-    # simple cmd (ex: mute sound)
-    elif to_execute := find_command(command):
-        print(f"[*]Executing {command}")
-        if type(to_execute) == str:
-            press_keys(to_execute)
+        argv = argv[0]
+        print(f"[*]Executing {command} (Arg type)")
+        command = argv[0].strip()   
+        arg_number = nlnumber_to_int(argv[1].strip())
+    
+    # find command
+    cmd_info = find_command(command)
+    if not cmd_info:
+      return False
+    
+    # check context 
+    if context := cmd_info.get('context'):
+        if get_command_context() != context:
+            print("[x] Wrong context for ", context)
+            return False
+            
+    # process 
+    if to_press := cmd_info.get('press'):
+        if arg_number:
+            press_keys(to_press, repeat=arg_number)
         else:
-            try:
-                to_execute() # custom function
-            except TypeError:
-                return False # without valid argument
-                
+            press_keys(to_press)
+    elif to_execute := cmd_info.get('func'):
+        if arg_number: 
+            to_execute(arg_number) # custom function with arg
+        else:
+            to_execute()
+            
     LAST_EXECUTED_COMMAND = command
     return True
 
 def repeat_last_command():
     print("[+]Repeating last command ", LAST_EXECUTED_COMMAND)
     run_command(LAST_EXECUTED_COMMAND, check_hotword=False)
-
 
 if __name__ == '__main__':
     pass

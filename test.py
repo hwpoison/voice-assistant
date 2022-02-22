@@ -6,13 +6,17 @@ class Test(unittest.TestCase):
     
     def setUp(self):
         commands.hotwords = ["hey google", "okey"]
+        commands.context_list = {
+            'CMD':'test.py'
+        }
         commands.numbers = [
             'zero','one','two','three','four',
             'five','six','seven','eight','nine','ten']
+            
         commands.command_list = {
-            'view the thing':commands.ctrl_num,
-            'press some key':"{UP}",
-            ('press space', 'space'): "{SPACE}"
+            'view the thing':{'func':commands.ctrl_num},
+            'press some key':{'press':'{UP}', 'context':'CMD'},
+            ('press space', 'space'): {'press':'{SPACE}'}
         }
         
     def test_or_regx_pattern(self):
@@ -25,7 +29,7 @@ class Test(unittest.TestCase):
     def test_find_command(self):
        entry = "space"
        result = processor.find_command(entry)
-       expected = '{SPACE}'
+       expected = {'press': '{SPACE}'}
        self.assertEqual(result, expected)
        
     def test_filter_hotword(self):
@@ -58,7 +62,13 @@ class Test(unittest.TestCase):
     
     def test_press_key_command(self):
         """ Command with key to press """
-        entry = 'okey google press space'
+        entry = 'hey google press space'
+        result = processor.run_command(entry, True)
+        self.assertEqual(result, True)
+
+    def test_press_key_command_context(self):
+        """ Command with key to press """
+        entry = 'hey google press some key'
         result = processor.run_command(entry, True)
         self.assertEqual(result, True)
     

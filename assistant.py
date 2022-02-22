@@ -11,7 +11,7 @@ import commands
 
 block_queue = queue.Queue()
 
-DEVICE_INPUT_NUMBER = 1
+DEVICE_INPUT_NUMBER = None
 if not DEVICE_INPUT_NUMBER:
     print("Available inputs devices, please select your input device (choice with '>' symbol):")
     print(sd.query_devices())
