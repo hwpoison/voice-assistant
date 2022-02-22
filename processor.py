@@ -45,9 +45,10 @@ def get_command_context(): # check context based on win title
             return context 
     return 'UNKNOW'
 
-def run_command(command, check_hotword=True) -> bool:
+def run_command(entry_command, check_hotword=True) -> bool:
     global LAST_EXECUTED_COMMAND
-    command = command.strip()
+    
+    command = entry_command.strip()
     arg_number = None
     
     # check and filter hotword
@@ -71,12 +72,12 @@ def run_command(command, check_hotword=True) -> bool:
     # find command
     cmd_info = find_command(command)
     if not cmd_info:
-      return False
+        return False
     
     # check context 
-    if context := cmd_info.get('context'):
-        if get_command_context() != context:
-            print("[x] Wrong context for ", context)
+    if cmd_context := cmd_info.get('context'):
+        if get_command_context() != cmd_context:
+            print("[x] Wrong context for ", cmd_context)
             return False
             
     # process 
@@ -89,14 +90,17 @@ def run_command(command, check_hotword=True) -> bool:
         if arg_number: 
             to_execute(arg_number) # custom function with arg
         else:
-            to_execute()
-            
-    LAST_EXECUTED_COMMAND = command
+            try:to_execute()
+            except TypeError:
+                print("[x] Error to execute command:", command)
+                return False
+                
+    LAST_EXECUTED_COMMAND = entry_command
     return True
 
 def repeat_last_command():
     print("[+]Repeating last command ", LAST_EXECUTED_COMMAND)
-    run_command(LAST_EXECUTED_COMMAND, check_hotword=False)
+    run_command(LAST_EXECUTED_COMMAND)
 
 if __name__ == '__main__':
     pass

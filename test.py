@@ -60,6 +60,15 @@ class Test(unittest.TestCase):
         result = processor.run_command(entry, False)
         self.assertEqual(result, True)
     
+    def test_incomplete_command_with_number(self):
+        """ Command with number argument:
+            >>> view the thing number two 
+            references to 'view the thing' number '2'
+        """
+        entry = 'view the thing'
+        result = processor.run_command(entry, False)
+        self.assertEqual(result, False)
+        
     def test_press_key_command(self):
         """ Command with key to press """
         entry = 'hey google press space'
