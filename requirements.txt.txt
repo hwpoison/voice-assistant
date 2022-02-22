@@ -1,3 +1,0 @@
-pyautoit
-vosk
-sounddevice
