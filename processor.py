@@ -8,17 +8,20 @@ LAST_EXECUTED_COMMAND = None
 
 def or_regx_pattern(words_list : list):
     # ['ok google', 'ahora'] -> (ok google|ahora.+)
-    return "|".join([n for n in list(map(lambda c: str(c), words_list))])
+    return f"({'|'.join([w for w in words_list])}*)"
 
-def nlnumber_to_int(num : str): # returns natural language number to integer
-    return commands.numbers.index(num) if num in commands.numbers else False
+def natural_to_int(string : str): # replace all natural numbers to int
+    pattern = or_regx_pattern(commands.numbers)
+    sub = re.sub(pattern, lambda m: str(commands.numbers.index(re.escape(m.group(0)))), string)
+    return sub if sub else string
 
 def find_into_str(string : str, word_list : list):
-    return re.findall(f"({or_regx_pattern(word_list)})\s(.+)", string)
+    return re.findall(f"{or_regx_pattern(word_list)}\s(.+)", string)
 
-def get_int_args(string : str):
+def get_int_args(string : str) -> int:
     # la cosa numero cinco -> la cosa numero, cinco
-    return re.findall(f"([a-z].+)\s({ or_regx_pattern(commands.numbers)}.+)", string)
+    arg_int = re.findall(f"[a-z].+\s([0-9]*)", string)[0]
+    return int(arg_int) if arg_int else 0
 
 def filter_hotword(string : str):
     hotword = find_into_str(string, commands.hotwords)
@@ -26,15 +29,20 @@ def filter_hotword(string : str):
     
 def reload_commands_module():
     importlib.reload(commands)
-    
-def in_str_or_tuple(keyword, key):
-    if type(key) == str:
-        return key == keyword
+
+def make_comparation(keyword, cmd):
+    return cmd == keyword or re.findall(cmd, keyword)
+
+def in_str_or_tuple(keyword, cmd):
+    if type(cmd) == str:
+        return make_comparation(keyword, cmd)
     else:
-        return keyword in key
-        
-def find_command(key_):
-    cmd_key = list(filter(lambda el: in_str_or_tuple(key_, el), commands.command_list))
+        for c in cmd:
+            search = make_comparation(keyword, c)
+            if search: return search 
+
+def find_command(keyword):
+    cmd_key = list(filter(lambda el: in_str_or_tuple(keyword, el), commands.command_list))
     return commands.command_list.get(cmd_key[0]) if cmd_key else None 
 
 def get_command_context(): # check context based on win title
@@ -49,7 +57,6 @@ def run_command(entry_command, check_hotword=True) -> bool:
     global LAST_EXECUTED_COMMAND
     
     command = entry_command.strip()
-    arg_number = None
     
     # check and filter hotword
     if check_hotword:
@@ -62,19 +69,19 @@ def run_command(entry_command, check_hotword=True) -> bool:
         print("[*] Reloading 'commands' module.")
         reload_commands_module()
         return True 
-    
-    # cmd with int arg (ex: run the tab five)
-    if argv := get_int_args(command):
-        argv = argv[0]
-        command = argv[0].strip()   
-        arg_number = nlnumber_to_int(argv[1].strip())
-        print(f"[*] Executing '{command}' with arg '{arg_number}'")
-    
+
+    # normalize
+    command = natural_to_int(command)
+
     # find command
     cmd_info = find_command(command)
     if not cmd_info:
         return False
-    
+
+    # check numeral arg (ex: run the tab five)
+    cmd_arg = get_int_args(command)
+    print(f"[*] Found '{command}' with arg '{cmd_arg}'") 
+
     # check context 
     if cmd_context := cmd_info.get('context'):
         if get_command_context() != cmd_context:
@@ -83,13 +90,13 @@ def run_command(entry_command, check_hotword=True) -> bool:
             
     # process 
     if to_press := cmd_info.get('press'):
-        if arg_number:
-            press_keys(to_press, repeat=arg_number)
+        if cmd_arg:
+            press_keys(to_press, repeat=cmd_arg)
         else:
             press_keys(to_press)
     elif to_execute := cmd_info.get('func'):
-        if arg_number: 
-            to_execute(arg_number) # custom function with arg
+        if cmd_arg: 
+            to_execute(cmd_arg) # custom function with arg
         else:
             try:to_execute()
             except TypeError:
@@ -104,7 +111,4 @@ def repeat_last_command():
     run_command(LAST_EXECUTED_COMMAND)
 
 if __name__ == '__main__':
-    #import time
-    #time.sleep(3)
-    n = run_command("ahora subir volumen en")
-    print(n)
+    pass

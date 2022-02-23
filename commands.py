@@ -13,7 +13,6 @@ reload_words = ['recargar módulos']
 numbers = ['cero', 'uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve',
             'diez','once','doce','trece','catorce','quince']
 
-
 # https://www.autoitscript.com/autoit3/docs/appendix/SendKeys.htm
 #^ Ctrl, # WIN, ! Alt, + TAB, SHIFT are equal to uppercase letter
 # func , press, context 
@@ -28,7 +27,7 @@ command_list = {
                         'press':'{BROWSER_REFRESH}',
                         'context':'BROWSER'
     },
-    "ver la pestaña":   {'func':ctrl_num, 'context':'BROWSER'}, # numeric command with custom function
+    "ver la pestaña ([0-9]) veces":   {'func':ctrl_num, 'context':'BROWSER'}, # numeric command with custom function
     ("salir de pantalla completa","pantalla completa"):{'context':'BROWSER', 'press':"{f}"},
     # all contexts
     "siguiente escritorio":{'press':'{RIGHT}'},
@@ -41,8 +40,8 @@ command_list = {
     "buscar":{'press':'^f'},
     "abajo":{'press':'{DOWN}'},
     "arriba":{'press':'{UP}'},
-    "subir volumen en":{'press':'{VOLUME_UP}'},
-    "bajar volumen en":{'press':'{VOLUME_DOWN}'},
+    "subir volumen en ([0-9])":{'press':'{VOLUME_UP}'},
+    "bajar volumen en ([0-9])":{'press':'{VOLUME_DOWN}'},
     "silenciar sonido":{'press':"{VOLUME_MUTE}"},
     "regresar sonido":{'press':"{VOLUME_MUTE}"},
     "ir arriba":{'press':"{HOME}"},

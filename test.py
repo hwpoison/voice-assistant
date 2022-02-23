@@ -14,7 +14,7 @@ class Test(unittest.TestCase):
             'five','six','seven','eight','nine','ten']
             
         commands.command_list = {
-            'view the thing':{'func':commands.ctrl_num},
+            'view the thing ([0-9])':{'func':commands.ctrl_num},
             'press some key':{'press':'{UP}', 'context':'CMD'},
             ('press space', 'space'): {'press':'{SPACE}'}
         }
@@ -23,13 +23,13 @@ class Test(unittest.TestCase):
         """ Returns OR list for a regex pattern """
         entry = ["word1", "word2", "word3", "word4"]
         result = processor.or_regx_pattern(entry)
-        expected = 'word1|word2|word3|word4'
+        expected = '(word1|word2|word3|word4*)'
         self.assertEqual(result, expected)
     
     def test_find_command(self):
        entry = "space"
        result = processor.find_command(entry)
-       expected = {'press': '{SPACE}'}
+       expected = {'press':'{SPACE}'}
        self.assertEqual(result, expected)
        
     def test_filter_hotword(self):
@@ -38,17 +38,16 @@ class Test(unittest.TestCase):
         self.assertEqual(result, 'do it!')
         
     def test_number(self):
-        entry = 'three'
-        
-        result = processor.nlnumber_to_int(entry)
-        expected = 3
+        entry = 'actually are three'
+        result = processor.natural_to_int(entry)
+        expected = 'actually are 3'
         self.assertEqual(result, expected)
         
     def test_get_int_args(self):
         """ Split text content and number"""
-        entry = "view the thing two"
+        entry = "view the thing 2"
         result = processor.get_int_args(entry)
-        expected = [('view the thing', 'two')]
+        expected = 2
         self.assertEqual(result, expected)
     
     def test_command_with_number(self):
