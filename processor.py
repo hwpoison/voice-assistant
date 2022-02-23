@@ -25,7 +25,6 @@ def filter_hotword(string : str):
     return False if not hotword else hotword[0][1]
     
 def reload_commands_module():
-    print("[*]Reloading 'commands' module.")
     importlib.reload(commands)
     
 def in_str_or_tuple(keyword, key):
@@ -40,6 +39,7 @@ def find_command(key_):
 
 def get_command_context(): # check context based on win title
     win_title = get_win_title()
+    print("[i] Actual window title ", win_title)
     for context, apps in commands.context_list.items():
         if win_title.endswith(tuple(apps)):
             return context 
@@ -59,15 +59,16 @@ def run_command(entry_command, check_hotword=True) -> bool:
             
     # special reload words
     if command in commands.reload_words: 
+        print("[*] Reloading 'commands' module.")
         reload_commands_module()
         return True 
     
     # cmd with int arg (ex: run the tab five)
     if argv := get_int_args(command):
         argv = argv[0]
-        print(f"[*]Executing {command} (Arg type)")
         command = argv[0].strip()   
         arg_number = nlnumber_to_int(argv[1].strip())
+        print(f"[*] Executing '{command}' with arg '{arg_number}'")
     
     # find command
     cmd_info = find_command(command)
@@ -77,7 +78,7 @@ def run_command(entry_command, check_hotword=True) -> bool:
     # check context 
     if cmd_context := cmd_info.get('context'):
         if get_command_context() != cmd_context:
-            print("[x] Wrong context for ", cmd_context)
+            print("[x] Wrong context: ", cmd_context)
             return False
             
     # process 
@@ -103,4 +104,7 @@ def repeat_last_command():
     run_command(LAST_EXECUTED_COMMAND)
 
 if __name__ == '__main__':
-    pass
+    #import time
+    #time.sleep(3)
+    n = run_command("ahora subir volumen en")
+    print(n)

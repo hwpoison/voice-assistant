@@ -9,7 +9,7 @@ import json
 import processor 
 import commands
 
-block_queue = queue.Queue()
+audio_blocks_queue = queue.Queue()
 
 DEVICE_INPUT_NUMBER = None
 if not DEVICE_INPUT_NUMBER:
@@ -18,23 +18,26 @@ if not DEVICE_INPUT_NUMBER:
     DEVICE_INPUT_NUMBER = int(input("[INPUT DEVICE NUMBER]:"))
 
 # status
-DONE_SENTENCE = False
-PREV_SENTENCE = None
+DONE_COMMAND = False # check success cmd
+PREV_SENTENCE = None # prevents repeat
 
-def process_entry(entry):
-    global PREV_SENTENCE
-    if entry and PREV_SENTENCE != entry: # detect hotword and prevent repeat
+def analize_entry(entry):
+    global PREV_SENTENCE, DONE_COMMAND
+    if entry and PREV_SENTENCE != entry:
+        print(f"[i] Analyzing entry '{entry}'")
+        DONE_COMMAND = False
         if entry in commands.again_words:
             processor.repeat_last_command()
         else:
             processor.run_command(entry)
+        DONE_COMMAND = True
         PREV_SENTENCE = entry
 
 def callback(indata, frames, time, status):
     """This is called (from a separate thread) for each audio block."""
     if status:
         print(status, file=sys.stderr)
-    block_queue.put(bytes(indata))
+    audio_blocks_queue.put(bytes(indata))
 
 try:
     model = "model"
@@ -45,26 +48,31 @@ try:
     with sd.RawInputStream(samplerate=samplerate, blocksize = 8000, device=DEVICE_INPUT_NUMBER, dtype='int16',
                             channels=1, callback=callback):
         print('#' * 80)
-        print('Press Ctrl+C to stop listening...')
+        print('Ready, press Ctrl+C to stop listening...')
         print('#' * 80)
         rec = vosk.KaldiRecognizer(model, samplerate)
         while True:
-            data = block_queue.get() # get audio block from queue
-            if rec.AcceptWaveform(data):
+            data = audio_blocks_queue.get() # get audio block from queue
+            if rec.AcceptWaveform(data): # final sentence
                 text = rec.Result()
                 text_json = json.loads(text)
-                if(text:= text_json["text"]):
-                    print("[!]Success Sentence:", text)
-                    DONE_SENTENCE = True
+                if(full_entry:= text_json["text"]):
+                    # Reset previous sentence
                     PREV_SENTENCE = "" 
-                    # TODO: fix memory leak ( .Reset() method apparently not working )
+                    if not DONE_COMMAND:
+                        # process total and corrected input sentence
+                        # if partial result is not conclusive
+                        print("[i] Analyzing entire entry")
+                        analize_entry(full_entry)
+                    # Reset model TODO: fix memory leak ( .Reset() method apparently not working )
                     rec = vosk.KaldiRecognizer(model, samplerate) 
             else:
-                partial = rec.PartialResult()
+                partial = rec.PartialResult() # partial sentence
                 partial_json = json.loads(partial)
                 if(partial_entry := partial_json.get("partial")):
-                    process_entry(partial_entry)
-                    DONE_SENTENCE = False
+                    #print("[!]Partial entry:", partial_entry)
+                    # process partial input
+                    analize_entry(partial_entry)
                     
 except KeyboardInterrupt:
     print('\nDone')

@@ -64,9 +64,9 @@ command_list = {
 }
 
 context_list = {
-    "BROWSER":['Microsoft​ Edge', 'Google Chrome'],
+    "BROWSER":['Microsoft Edge', 'Google Chrome'],
     "CMD":['python', 'cmd.exe', 'commands.py']
 }
 
 if __name__ == '__main__':
-    print(check_context())
+    pass
