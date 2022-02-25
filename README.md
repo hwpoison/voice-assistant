@@ -9,10 +9,11 @@ a small voice desktop assistant written on a booring sunday afternoon
 
 2 - unzip and put the content in a new folder named "model" in the same folder as the script.
 
-3 - run with "python assistant.py" , select your device and press Enter.
+3 - run with "python assistant.py" or "gui.pyw" , select your device and press Enter.
 
 ## Features
  - Execute commands with a hotword like google assistant.
  - Reload commands while the assistant is runing.
+ - Can execute commands with numeric args.
  - Repeat the last command.
  - You can add more commands and hotwords.

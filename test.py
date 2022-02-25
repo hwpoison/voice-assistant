@@ -1,4 +1,4 @@
-import processor, commands
+import command_processor, commands
 import unittest
 
 
@@ -15,6 +15,7 @@ class Test(unittest.TestCase):
             
         commands.command_list = {
             'view the thing ([0-9])':{'func':commands.ctrl_num},
+            'view that ([0-9]) times':{'func':commands.ctrl_num},
             'press some key':{'press':'{UP}', 'context':'CMD'},
             ('press space', 'space'): {'press':'{SPACE}'}
         }
@@ -22,31 +23,31 @@ class Test(unittest.TestCase):
     def test_or_regx_pattern(self):
         """ Returns OR list for a regex pattern """
         entry = ["word1", "word2", "word3", "word4"]
-        result = processor.or_regx_pattern(entry)
+        result = command_processor.or_regx_pattern(entry)
         expected = '(word1|word2|word3|word4*)'
         self.assertEqual(result, expected)
     
     def test_find_command(self):
        entry = "space"
-       result = processor.find_command(entry)
+       result = command_processor.find_command(entry)
        expected = {'press':'{SPACE}'}
        self.assertEqual(result, expected)
        
     def test_filter_hotword(self):
         entry = "hey google do it!"
-        result = processor.filter_hotword(entry)
+        result = command_processor.filter_hotword(entry)
         self.assertEqual(result, 'do it!')
         
     def test_number(self):
         entry = 'actually are three'
-        result = processor.natural_to_int(entry)
+        result = command_processor.natural_to_int(entry)
         expected = 'actually are 3'
         self.assertEqual(result, expected)
         
     def test_get_int_args(self):
         """ Split text content and number"""
         entry = "view the thing 2"
-        result = processor.get_int_args(entry)
+        result = command_processor.get_int_args(entry)
         expected = 2
         self.assertEqual(result, expected)
     
@@ -56,7 +57,16 @@ class Test(unittest.TestCase):
             references to 'view the thing' number '2'
         """
         entry = 'view the thing two'
-        result = processor.run_command(entry, False)
+        result = command_processor.run_command(entry, False)
+        self.assertEqual(result, True)
+
+    def test_command_with_number_and(self):
+        """ Command with number argument:
+            >>> view the thing number two 
+            references to 'view the thing' number '2'
+        """
+        entry = 'view that two times'
+        result = command_processor.run_command(entry, False)
         self.assertEqual(result, True)
     
     def test_incomplete_command_with_number(self):
@@ -65,19 +75,19 @@ class Test(unittest.TestCase):
             references to 'view the thing' number '2'
         """
         entry = 'view the thing'
-        result = processor.run_command(entry, False)
+        result = command_processor.run_command(entry, False)
         self.assertEqual(result, False)
         
     def test_press_key_command(self):
         """ Command with key to press """
         entry = 'hey google press space'
-        result = processor.run_command(entry, True)
+        result = command_processor.run_command(entry, True)
         self.assertEqual(result, True)
 
     def test_press_key_command_context(self):
         """ Command with key to press """
         entry = 'hey google press some key'
-        result = processor.run_command(entry, True)
+        result = command_processor.run_command(entry, True)
         self.assertEqual(result, True)
     
     

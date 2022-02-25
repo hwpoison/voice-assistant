@@ -27,7 +27,7 @@ command_list = {
                         'press':'{BROWSER_REFRESH}',
                         'context':'BROWSER'
     },
-    "ver la pestaña ([0-9]) veces":   {'func':ctrl_num, 'context':'BROWSER'}, # numeric command with custom function
+    "ver la pestaña ([0-9])":   {'func':ctrl_num, 'context':'BROWSER'}, # numeric command with custom function
     ("salir de pantalla completa","pantalla completa"):{'context':'BROWSER', 'press':"{f}"},
     # all contexts
     "siguiente escritorio":{'press':'{RIGHT}'},
@@ -39,11 +39,12 @@ command_list = {
     "subir página":{'press':'{PGUP}'},
     "buscar":{'press':'^f'},
     "abajo":{'press':'{DOWN}'},
+    "abajo ([0-9]) veces":{'press':'{DOWN}'},
     "arriba":{'press':'{UP}'},
     "subir volumen en ([0-9])":{'press':'{VOLUME_UP}'},
     "bajar volumen en ([0-9])":{'press':'{VOLUME_DOWN}'},
     "silenciar sonido":{'press':"{VOLUME_MUTE}"},
-    "regresar sonido":{'press':"{VOLUME_MUTE}"},
+    "regresar sonido":{'press':"{VOLUME_UP}"},
     "ir arriba":{'press':"{HOME}"},
     "ir abajo":{'press':"{END}"},
     "siguiente canción":{'press':"{MEDIA_NEXT}"},
