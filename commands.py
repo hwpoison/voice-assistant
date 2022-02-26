@@ -33,7 +33,7 @@ command_list = {
     "siguiente escritorio":{'press':'{RIGHT}'},
     "anterior escritorio": {'press':'^#{LEFT}'},
     "minimizar ventanas":{'press':'#m'},
-    "maximizar ventanas":{'press':'!{TAB}'},
+    ("maximizar las ventanas", "maximizar ventanas"):{'press':'!{TAB}'},
     "tomar una captura": {'press':'#{PRINTSCREEN}'} ,
     "pasar página":{'press':'{PGDN}'},
     "subir página":{'press':'{PGUP}'},

@@ -15,7 +15,8 @@ class Assistant(Thread):
         self.audio_blocks_queue = queue.Queue()
         self.MODEL_FOLDER = 'model'
         self.entry = ' '
-
+        self.stream = None
+        self.event = None
         self.DONE_COMMAND = False # check success cmd
         self.PREVIOUS_ENTRY = None # prevents repeat
         self.INPUT_DEVICE_INDEX = None
@@ -40,11 +41,16 @@ class Assistant(Thread):
         self.audio_blocks_queue.put(bytes(indata))
 
     def terminate(self):
-        self.stream.abort()
-        self.event.set()
-        print("[x] Assistant thread aborted.")
+        if self.stream:
+            self.stream.abort()
+            self.event.set()
+            print("[x] Assistant thread aborted.")
+        sys.exit(0)
 
     def run(self):
+        if not self.INPUT_DEVICE_INDEX:
+            print("[X] Input device not selected.")
+            self.terminate()
         try:
             device_info = sd.query_devices(self.INPUT_DEVICE_INDEX, 'input')
             # soundfile expects an int, sounddevice provides a float:
