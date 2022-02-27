@@ -1,15 +1,17 @@
+import os
+import gc
+import signal
+from threading import Thread
+import sounddevice as sd
 import tkinter as tk
 import tkinter.font as font
-from assistant import Assistant
-from threading import Thread
 from tkinter import messagebox
-import os
-import signal
-import sounddevice as sd
+
+from assistant import Assistant
 from command_processor import reload_commands_module
 
-
 class SelectDevice(tk.Tk):
+    """ Selection input audio device screen """
     def __init__(self):
         super().__init__()
         self.geometry("600x500")
@@ -57,8 +59,8 @@ class SelectDevice(tk.Tk):
             return int(default_input_device[0][3])
         return False
 
-
 class GUI(Thread):
+    """ float transcription text """
     def __init__(self):
         # Create main window
         self.root = tk.Tk()
@@ -75,7 +77,7 @@ class GUI(Thread):
         self.label_btn['font'] = font.Font(size=20)
 
         self.root.after(50, self.update_text)
-        self.root.wm_attributes("-topmost", 1)
+        self.root.wm_attributes("-topmost", 1) # top screen
         self.root.update_idletasks()
         # Run appliction
         self.root.overrideredirect(1)
@@ -93,9 +95,13 @@ class GUI(Thread):
             label="Close", command=lambda: self.exit(need_confirm=True))
 
         self.label_btn.bind("<Button-3>", self.do_popup)
+        
         signal.signal(signal.SIGINT, self.traping)
         self.root.mainloop()
 
+    def hide_transcription(self):
+        self.label_btn.pack_forget()
+        
     def do_popup(self, event):
         try:
             self.menu.tk_popup(event.x_root, event.y_root)
@@ -107,10 +113,11 @@ class GUI(Thread):
         self.root.geometry(f"+{x}+{y}")
 
     def update_text(self):
+        self.label_btn.pack(side=tk.LEFT)
         if not assistant_thread.is_alive():
             self.show_error("Error", "Something has failed, exiting...")
             self.exit()
-        self.transcription.set(assistant_thread.entry)
+        self.transcription.set(assistant_thread.entry[0:27])
         color = "green" if assistant_thread.DONE_COMMAND else "black"
         self.label_btn.configure(fg=color)
         self.root.after(50, self.update_text)
@@ -121,7 +128,7 @@ class GUI(Thread):
     def exit(self, need_confirm=False):
         if need_confirm:
             confirmation = messagebox.askyesno(
-                'Confirmación', '¿Cerrar el asistente?')
+                'Confirm', 'Close the assistant?')
             if not confirmation:
                 return
         print("[!] Bye...")
@@ -132,13 +139,17 @@ class GUI(Thread):
         exit()
         os.sys.exit(0)
 
-
 if __name__ == '__main__':
     # initialize assistant thread
     assistant_thread = Assistant()
-    assistant_thread.INPUT_DEVICE_INDEX = False
+    assistant_thread.INPUT_DEVICE_INDEX = None
     if not assistant_thread.INPUT_DEVICE_INDEX:
+        # init device selection window
         SelectDevice()
+        # collect gargabed from closed device selection window thread to avoid future 
+        # purgue that can accidentadlly kill the gui main thread
+        gc.collect() 
+        
     assistant_thread.daemon = True  # set daemon
     assistant_thread.start()
 

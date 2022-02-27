@@ -3,7 +3,7 @@ import queue
 import sys
 import json
 from threading import Thread, Event
-
+import time
 import sounddevice as sd
 import vosk
 import command_processor 
@@ -15,26 +15,39 @@ class Assistant(Thread):
         self.audio_blocks_queue = queue.Queue()
         self.MODEL_FOLDER = 'model'
         self.entry = ' '
+        
+        # thread parameters
         self.stream = None
         self.event = None
+        
+        # flow control 
         self.DONE_COMMAND = False # check success cmd
-        self.PREVIOUS_ENTRY = None # prevents repeat
-        self.INPUT_DEVICE_INDEX = None
+        self.PREVIOUS_ENTRY = '' # prevents repeat
+        self.WAIT_ENTIRE = False # wait for entire sentence
+        
+        # device configuration
+        self.INPUT_DEVICE_INDEX = 1
         self.BLOCK_SIZE = 8000
-
+        
+        
     def select_device(self):
         print('Available inputs devices, please select your input device (choice with '>' symbol):')
         print(sd.query_devices())
         self.INPUT_DEVICE_INDEX = int(input("[INPUT DEVICE NUMBER]:"))
 
     def analize_entry(self, entry):
+        # disable if is necessary fast input analysis
+        self.WAIT_ENTIRE = command_processor.LAZY_MODE
+        
         if entry and self.PREVIOUS_ENTRY != entry:
+            #self.DONE_COMMAND = False
             print(f'[i] Analyzing entry "{entry}"')
             if entry in commands.again_words:
                 cmd = command_processor.repeat_last_command()
             else:
                 cmd = command_processor.run_command(entry)
                 self.DONE_COMMAND = cmd if cmd else False
+                
             self.PREVIOUS_ENTRY = entry
 
     def callback(self, indata, frames, time, status):
@@ -45,6 +58,7 @@ class Assistant(Thread):
             self.stream.abort()
             self.event.set()
             print("[x] Assistant thread aborted.")
+        print(sys.exc_info())
         sys.exit(0)
 
     def run(self):
@@ -69,26 +83,27 @@ class Assistant(Thread):
                     if rec.AcceptWaveform(data): # final sentence
                         text = rec.Result()
                         text_json = json.loads(text)
-                        if(full_entry:= text_json["text"]):
-                            # Reset previous sentence
-                            self.PREVIOUS_ENTRY = "" 
-                            if not self.DONE_COMMAND:
-                                # process total and corrected input sentence
-                                # if partial result is not conclusive
-                                print('[i] Analyzing entire entry')
-                                self.analize_entry(full_entry)
-                                self.entry = full_entry
-                                #self.entry = ""
+                        if((full_entry:= text_json["text"]) 
+                            and self.DONE_COMMAND is not True):
+                            # if the command is not done and the partial input
+                            # is not conclusive, try process the entire sentence
+                            self.PREVIOUS_ENTRY = ''
+                            print('[i] Analyzing entire entry')
+                            self.analize_entry(full_entry)
+                            self.entry = full_entry
                             # Reset model TODO: fix memory leak ( .Reset() method apparently not working )
                             rec = vosk.KaldiRecognizer(model, samplerate) 
                     else:
                         partial = rec.PartialResult() # partial sentence
                         partial_json = json.loads(partial)
-                        if(partial_entry := partial_json.get('partial')):
-                            #print("[!]Partial entry:", partial_entry)
-                            # process partial input
+                        if((partial_entry := partial_json.get('partial'))
+                                and not self.WAIT_ENTIRE):
+                            # Process parcial input for fast response
+                            print("[!] Partial entry:", partial_entry)
                             self.analize_entry(partial_entry)
                             self.entry = partial_entry
+                        else:
+                            self.DONE_COMMAND = False
                 self.event.wait()
 
         except KeyboardInterrupt:
@@ -101,6 +116,8 @@ class Assistant(Thread):
 
 if __name__ == '__main__':
     assistant_th = Assistant()
-    assistant_th.select_device()
+    if not assistant_th.INPUT_DEVICE_INDEX:
+        assistant_th.select_device()
     assistant_th.run()
+    assistant_th.join()
     input()
