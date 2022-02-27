@@ -1,5 +1,8 @@
 from utils import run_process, ctrl_num, get_win_title, press_write
 
+# synth voice language
+voice_lang = 'es'
+
 # for invoke command 
 hotwords = ['jarvis', 'alexa', 'por favor', 'comando', 'ahora', 'ok google','ok']
 
@@ -62,7 +65,7 @@ command_list = {
     "abajo {n} veces":{'press':'{DOWN}'},
     "abajo":{'press':'{DOWN}'},
     
-    "arriba":{'press':'{UP}', 'lazy':True},
+    "arriba":{'press':'{UP}', 'lazy':True,'voice':'enseguida'},
     "subir volumen en {n}":{'press':'{VOLUME_UP}'},
     "bajar volumen en {n}":{'press':'{VOLUME_DOWN}'},
     "silenciar sonido":{'press':"{VOLUME_MUTE}"},
@@ -78,8 +81,8 @@ command_list = {
     "ir hacia atrás":{'press':"{BROWSER_BACK}"},
     "refrescar":{'press':"{F5}"},
     "cerrar ventana":{'press':"!{F4}"},
-    "abrir whatsapp":{'func':run_process("https://web.whatsapp.com/")},
-    "abrir youtube":{'func':run_process("https://youtube.com")},
+    "abrir whatsapp":{'func':run_process("https://web.whatsapp.com/"),'voice':'abriendo whatsapp'},
+    "abrir youtube":{'func':run_process("https://youtube.com"),'voice':'abriendo youtube'},
     "abrir el traductor":{'func':run_process("https://deepl.com")},
     "abrir el bloc de notas":{'func':run_process("notepad")},
     "abrir spotify":{'func':run_process("https://open.spotify.com/")}

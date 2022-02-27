@@ -6,7 +6,7 @@ import sounddevice as sd
 import tkinter as tk
 import tkinter.font as font
 from tkinter import messagebox
-
+from speechsynth import speech
 from assistant import Assistant
 from command_processor import reload_commands_module
 
@@ -143,6 +143,7 @@ if __name__ == '__main__':
     # initialize assistant thread
     assistant_thread = Assistant()
     assistant_thread.INPUT_DEVICE_INDEX = None
+    
     if not assistant_thread.INPUT_DEVICE_INDEX:
         # init device selection window
         SelectDevice()
@@ -152,7 +153,7 @@ if __name__ == '__main__':
         
     assistant_thread.daemon = True  # set daemon
     assistant_thread.start()
-
+    speech("asistente iniciado")
     # initialize gui and join main thread
     gui = GUI()
     gui.start()

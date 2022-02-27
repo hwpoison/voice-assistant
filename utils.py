@@ -6,7 +6,6 @@ def run_process(process_name: str):
         autoit.run(f"cmd /c start {process_name}")
     return run_process
 
-
 def ctrl_num(num: int):
     print(f"[+] Sending CTRL+{num}")
     autoit.send("^"+str(num))
@@ -23,3 +22,4 @@ def get_win_title():
 def press_write(text: str):
     print(f"[+] Writing the text '{text}'")
     return autoit.send(str(text))
+    

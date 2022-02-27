@@ -3,6 +3,7 @@ import time
 import importlib
 import commands
 from utils import press_keys, get_win_title
+from speechsynth import speech
 
 """
     This module allows to process and executes commands from natural language text
@@ -93,7 +94,7 @@ def run_command(entry_command, check_hotword=True) -> bool:
         LAZY_MODE = True 
     else: 
         LAZY_MODE = False
-        
+    
     # check context
     if cmd_context:= cmd_info.get('context'):
         actual_context = get_command_context()
@@ -119,6 +120,9 @@ def run_command(entry_command, check_hotword=True) -> bool:
                 return False
 
     LAST_EXECUTED_COMMAND = entry_command
+    
+    if to_speech:=cmd_info.get('voice'):
+        speech(to_speech)
     return True
 
 
