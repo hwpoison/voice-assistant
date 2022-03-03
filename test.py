@@ -16,6 +16,7 @@ class Test(unittest.TestCase):
         commands.command_list = {
             'view the thing {n}':{'func':commands.ctrl_num},
             'view that {n} times':{'func':commands.ctrl_num},
+            'press total {n}':{'press':'{UP}'},
             'press some key':{'press':'{UP}', 'context':'UNKNOW'},
             ('press space', 'space'): {'press':'{SPACE}'}
         }
@@ -55,7 +56,16 @@ class Test(unittest.TestCase):
         entry = 'view that two times'
         result = command_processor.run_command(entry, False)
         self.assertEqual(result, True)
-    
+
+    def test_command_with_number_without_it(self):
+        """ Command with number argument:
+            >>> view the thing number two 
+            references to 'view the thing' number '2'
+        """
+        entry = 'press total' # ignoring the {n} arg will produce a error
+        result = command_processor.run_command(entry, False)
+        self.assertEqual(result, False)
+        
     def test_incomplete_command_with_number(self):
         """ Command with number argument:
             >>> view the thing number two 

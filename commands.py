@@ -34,6 +34,7 @@ literals.update({numbers[inum]:str(inum) for inum in range(0, len(numbers))})
 # func , press, context 
 command_list = {
     "abrir la consola": {'func':run_process('cmd.exe')}, # run simple process
+    'suspender computadora':{'press':'{SLEEP}'},
     ("salir", "escapar"):{'press':"{ESC}"}, # many alternatives for the same command
     "escribir {n}":{'func':press_write, 'lazy':True},
     # browser context
@@ -52,9 +53,9 @@ command_list = {
     "seleccionar todo":{'press':'^a'},
     "borrar":{'press':'{BACKSPACE}'},
     'deshacer':{'press':'^z'},
-    'enter':{'press':'{ENTER}'},
-    "siguiente escritorio":{'press':'{RIGHT}'},
-    
+    ('capturar solo región','capturar región'):{'press':'#S'},
+    ('aceptar', 'enter'):{'press':'{ENTER}'},
+    "siguiente escritorio":{'press':'^#{RIGHT}'},
     "anterior escritorio": {'press':'^#{LEFT}'},
     "minimizar ventanas":{'press':'#m'},
     ("maximizar las ventanas", "maximizar ventanas"):{'press':'!{TAB}'},

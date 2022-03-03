@@ -45,7 +45,11 @@ class Assistant(Thread):
             if entry in commands.again_words:
                 cmd = command_processor.repeat_last_command()
             else:
-                cmd = command_processor.run_command(entry)
+                try:
+                    cmd = command_processor.run_command(entry)
+                except:
+                    print(f"[x] Error to execute command:{ sys.exc_info() }")
+                    cmd = False
                 self.DONE_COMMAND = cmd if cmd else False
                 
             self.PREVIOUS_ENTRY = entry
@@ -84,7 +88,8 @@ class Assistant(Thread):
                         text = rec.Result()
                         text_json = json.loads(text)
                         if((full_entry:= text_json["text"]) 
-                            and self.DONE_COMMAND is not True):
+                            and self.DONE_COMMAND is not True
+                            and partial_entry.split(' ')[0] in commands.hotwords):
                             # if the command is not done and the partial input
                             # is not conclusive, try process the entire sentence
                             self.PREVIOUS_ENTRY = ''
@@ -97,7 +102,8 @@ class Assistant(Thread):
                         partial = rec.PartialResult() # partial sentence
                         partial_json = json.loads(partial)
                         if((partial_entry := partial_json.get('partial'))
-                                and not self.WAIT_ENTIRE):
+                                and not self.WAIT_ENTIRE 
+                                and partial_entry.split(' ')[0] in commands.hotwords):
                             # Process parcial input for fast response
                             print("[!] Partial entry:", partial_entry)
                             self.analize_entry(partial_entry)
