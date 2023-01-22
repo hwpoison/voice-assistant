@@ -9,11 +9,10 @@ import tkinter.font as font
 from tkinter import messagebox
 from speechsynth import speech
 
+from settings import Settings, Intents
 from assistant import Assistant
-from command_processor import reload_commands_module
+from intents_processor import reload_intents
 from logger import logger
-from settings import Settings
-
 
 class SelectDevice(tk.Tk):
     """ Selection input audio device screen """
@@ -97,7 +96,7 @@ class GUI(Thread):
         # menu
         self.menu = tk.Menu(self.root, tearoff=0)
         self.menu.add_command(
-            label="Reload Assistant Commands", command=reload_commands_module)
+            label="Reload Assistant Commands", command=reload_intents)
         self.menu.add_separator()
         self.menu.add_command(
             label="Close", command=lambda: self.exit(need_confirm=True))
@@ -150,19 +149,22 @@ class GUI(Thread):
 
 if __name__ == '__main__':
     # initialize assistant thread
+
     assistant_thread = Assistant()
-    assistant_thread.INPUT_DEVICE_INDEX = None
+    if not Settings.auto_select_device:
+        assistant_thread.INPUT_DEVICE_INDEX = None
 
     if not assistant_thread.INPUT_DEVICE_INDEX:
         # init device selection window
         SelectDevice()
         # collect gargabed from closed device selection window thread to avoid future
-        # purgue that can accidentadlly kill the gui main thread
+        # gc action that can accidentadlly kill the gui main thread
         gc.collect()
 
     assistant_thread.daemon = True  # set daemon
     assistant_thread.start()
-    speech(random.choice(Settings.welcome_messages))
+    if Settings.voice:
+        speech(random.choice(Intents.welcome_messages))
     # initialize gui and join main thread
     gui = GUI()
     gui.start()

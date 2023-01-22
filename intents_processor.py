@@ -3,7 +3,7 @@ import re
 import utils
 from logger import logger
 from speechsynth import speech
-from settings import Settings, load_settings
+from settings import Settings, Intents, load_intents
 
 """
     This module allows to process and executes commands from natural language text
@@ -17,7 +17,7 @@ def normalize_args(arg):  # normalize arg content according to settings.literals
     if not arg:
         return False
 
-    for nl, lit in Settings.literals.items():
+    for nl, lit in Intents.literals.items():
         arg = arg.replace(nl, lit)
 
     if arg.isdigit():
@@ -49,7 +49,7 @@ def find_match_command(sentence):
     """
         Iterate over command list and find the best match
     """
-    for cmd_key, value in Settings.all_commands.items():
+    for cmd_key, value in Intents.all_commands.items():
         cmd_list = [cmd_key]
         if synms := value.get('alternative'):  # synonyms availables
             if type(synms) is list:
@@ -82,20 +82,20 @@ def match_and_filter_hotword(string: str):
         Detect and filter match hotword into a sentence
         also OR regex allow to use hotowords with more thatn one word
     """
-    hotword = find_into_str(string, Settings.hotwords)
+    hotword = find_into_str(string, Intents.hotwords)
     return False if not hotword else hotword[0][1]
 
 
-def reload_commands_module():
+def reload_intents():
     logger.info("Reloading settings")
-    load_settings()
+    load_intents()
     logger.info("Settings reloaded")
 
 
 def get_context():  # check context based on win title
     win_title = utils.get_win_title()
     logger.info(f"Actual window title { win_title }")
-    for context, apps in Settings.context_list.items():
+    for context, apps in Intents.context_list.items():
         if win_title.endswith(tuple(apps)):
             return context
     return 'UNKNOW'
@@ -119,9 +119,9 @@ def intent(entry, check_hotword=True) -> bool:
         logger.info("Hotword detected")
         
     # special reload words
-    if command in Settings.reload_words:
+    if command in Intents.reload_words:
         logger.info("Reloading 'settings' module.")
-        reload_commands_module()
+        reload_intents()
         return True
 
     # find command
@@ -168,8 +168,8 @@ def intent(entry, check_hotword=True) -> bool:
                 function(to_execute)
 
     LAST_EXECUTED_COMMAND = entry
-
-    if to_speech := cmd_info.get('voice'):
+    
+    if to_speech := cmd_info.get('voice') and Settings.voice:
         speech(to_speech)
 
     return True

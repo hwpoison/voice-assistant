@@ -5,8 +5,8 @@ from threading import Event, Thread
 import vosk
 import sounddevice as sd
 
-import command_processor
-from settings import Settings
+import intents_processor
+from settings import Intents, Settings
 from logger import logger
 
 
@@ -14,7 +14,7 @@ class Assistant(Thread):
     def __init__(self):
         super().__init__()
         self.audio_blocks_queue = queue.Queue()
-        self.MODEL_FOLDER = 'model'
+        self.MODEL_FOLDER = f'models/{Settings.lang}'
         self.entry = ' '
 
         # thread parameters
@@ -25,7 +25,8 @@ class Assistant(Thread):
         self.DONE_COMMAND = False  # check success cmd
         self.PREVIOUS_ENTRY = ''  # prevents repeat
         self.WAIT_ENTIRE_INPUT = False  # wait for entire sentence
-
+        
+        logger.info(f"Available devices: { sd.query_devices() }")
         # device configuration
         self.INPUT_DEVICE_INDEX = 1
         self.BLOCK_SIZE = 8000
@@ -37,16 +38,16 @@ class Assistant(Thread):
 
     def analize_entry(self, entry):
         # disable if is necessary fast input analysis
-        self.WAIT_ENTIRE_INPUT = command_processor.WAIT_ENTIRE_INPUT
+        self.WAIT_ENTIRE_INPUT = intents_processor.WAIT_ENTIRE_INPUT
         if entry and self.PREVIOUS_ENTRY != entry:
             # self.DONE_COMMAND = False
             logger.info(f'[i] Analyzing entry "{entry}"')
-            if entry in Settings.again_words:
+            if entry in Intents.again_words:
                 logger.info("Trying last command")
-                cmd = command_processor.repeat_last_command()
+                cmd = intents_processor.repeat_last_command()
             else:
                 try:
-                    cmd = command_processor.intent(entry)
+                    cmd = intents_processor.intent(entry)
                 except:
                     logger.error(f"Error to execute command:{ sys.exc_info() }")
                     cmd = False
@@ -105,7 +106,7 @@ class Assistant(Thread):
                         partial_json = json.loads(partial)
                         if ((partial_entry := partial_json.get('partial'))
                                 and not self.WAIT_ENTIRE_INPUT
-                                and partial_entry.split(' ')[0] in Settings.hotwords):
+                                and partial_entry.split(' ')[0] in Intents.hotwords):
                             # Process parcial input for fast response
                             logger.info(f"Partial entry:{ partial_entry }")
                             self.analize_entry(partial_entry)

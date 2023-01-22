@@ -7,6 +7,7 @@ def run_process(process_name: str):
     logger.info(f"Runing process '{process_name}'")
     autoit.run(f"cmd /c start {process_name}")
 
+
 def ctrl_num(num: int):
     logger.info(f"Sending CTRL+{num}")
     autoit.send("^"+str(num))

@@ -5,13 +5,13 @@ A small voice desktop assistant written on a booring sunday afternoon
 
 0 - Install Requirements.
 
-1 - Download the spanish (or others) model from https://alphacephei.com/vosk/models (https://alphacephei.com/vosk/models/vosk-model-small-es-0.42.zip)
+1 - Download your language model from https://alphacephei.com/vosk/models (for spanish https://alphacephei.com/vosk/models/vosk-model-small-es-0.42.zip)
 
-2 - unzip and put the content in a new folder named "model" in the same folder as the script.
+2 - unzip and put the content in a new folder named with selected language (using IETF tag https://en.wikipedia.org/wiki/IETF_language_tag) into "models" dir.
 
 3 - run with "python assistant.py" or "gui.pyw" , select your device and press Enter.
 
-All commands are related in 'commands_<lang>.json' and 'settings_<lang>.json'.
+All commands, hotwords and more are related in 'intents_<lang>.json' and language and other settings in 'settings.json'.
 
 ## Features
  - Execute commands with a hotword like google assistant.
@@ -19,7 +19,6 @@ All commands are related in 'commands_<lang>.json' and 'settings_<lang>.json'.
  - Can execute commands with numeric args.
  - Repeat the last command.
  - You can add more commands and hotwords.
-
 
 # Command options
     -> run_process : Execute a process

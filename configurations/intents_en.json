@@ -1,0 +1,284 @@
+{
+    "commands": {
+        "open the console": {
+            "run_process": "cmd.exe",
+            "alternative": [
+                "open terminal"
+            ]
+        },
+        "suspend computer": {
+            "press": "{SLEEP}"
+        },
+        "escape": {
+            "press": "{ESC}",
+            "alternative": [
+                "exit"
+            ]
+        },
+        "write {n}": {
+            "write": "{}",
+            "wait": true
+        },
+        "open new tab": {
+            "context": "BROWSER",
+            "press": "^t"
+        },
+        "close tab": {
+            "press": "^w",
+            "context": "BROWSER"
+        },
+        "reopen tab": {
+            "press": "^T",
+            "context": "BROWSER"
+        },
+        "reload page": {
+            "press": "{BROWSER_REFRESH}",
+            "context": "BROWSER"
+        },
+        "switch tab {n}": {
+            "ctrl_num": "{}",
+            "context": "BROWSER"
+        },
+        "ctrl {n}": {
+            "ctrl_num": "{}"
+        },
+        "next tab": {
+            "press": "^{TAB}",
+            "context": "BROWSER"
+        },
+        "previous tab": {
+            "press": "^+{TAB}",
+            "context": "BROWSER"
+        },
+        "full screen": {
+            "context": "BROWSER",
+            "press": "{f}",
+            "alternative": [
+                "exit full screen"
+            ]
+        },
+        "select all": {
+            "press": "^a"
+        },
+        "erase": {
+            "press": "{BACKSPACE}"
+        },
+        "undo": {
+            "press": "^z"
+        },
+        "screenshot of a screen part": {
+            "press": "#S",
+            "alternative": [
+                "screenshot only a part"
+            ]
+        },
+        "enter": {
+            "press": "{ENTER}",
+            "alternative": [
+                "accept"
+            ]
+        },
+        "next desktop": {
+            "press": "^#{RIGHT}"
+        },
+        "previous desktop": {
+            "press": "^#{LEFT}"
+        },
+        "minimize windows": {
+            "press": "#m"
+        },
+        "maximize windows": {
+            "press": "!{TAB}",
+            "alternative": [
+                "maximize the windows"
+            ]
+        },
+        "take a screenshot": {
+            "press": "#{PRINTSCREEN}"
+        },
+        "next page": {
+            "press": "{PGDN}"
+        },
+        "up page": {
+            "press": "{PGUP}"
+        },
+        "search": {
+            "press": "^f"
+        },
+        "down {n} twices": {
+            "press": "{DOWN}"
+        },
+        "down": {
+            "press": "{DOWN}"
+        },
+        "up": {
+            "press": "{UP}",
+            "wait": true,
+            "voice": "all right"
+        },
+        "turn up volumen {n}": {
+            "press": "{VOLUME_UP}"
+        },
+        "turn down volumen {n}": {
+            "press": "{VOLUME_DOWN}"
+        },
+        "mute sound": {
+            "press": "{VOLUME_MUTE}",
+            "alternative": [
+                "silenciar sonidos"
+            ]
+        },
+        "unmute sound": {
+            "press": "{VOLUME_UP}"
+        },
+        "go up": {
+            "press": "{HOME}"
+        },
+        "go down": {
+            "press": "{END}"
+        },
+        "next song": {
+            "press": "{MEDIA_NEXT}"
+        },
+        "previous song": {
+            "press": "{MEDIA_PREV}"
+        },
+        "stop music": {
+            "press": "{MEDIA_PLAY_PAUSE}",
+            "alternative": [
+                "pause",
+                "pause music",
+                "silent"
+            ]
+        },
+        "play": {
+            "press": "{MEDIA_PLAY_PAUSE}",
+            "alternative": [
+                "reanude music",
+                "play again"
+            ]
+        },
+        "play music": {
+            "press": "{MEDIA_PLAY_PAUSE}"
+        },
+        "open the mail": {
+            "run_process": "outlook.exe"
+        },
+        "go back": {
+            "press": "{BROWSER_BACK}"
+        },
+        "refresh": {
+            "press": "{F5}"
+        },
+        "close window": {
+            "press": "!{F4}"
+        },
+        "open whatsapp": {
+            "run_process": "https://web.whatsapp.com/",
+            "voice": "opening whatsapp"
+        },
+        "open youtube": {
+            "run_process": "https://youtube.com",
+            "voice": "opening youtube"
+        },
+        "open the translator": {
+            "run_process": "https://deepl.com"
+        },
+        "open the note pad": {
+            "run_process": "notepad",
+            "alternative": [
+                "open notepad"
+            ]
+        },
+        "open spotify": {
+            "run_process": "https://open.spotify.com/",
+            "alternative": [
+                "i wanna hear music"
+            ]
+        }
+    },
+    "hotwords": {
+        "activation": [
+            "jarvis",
+            "alexa",
+            "command",
+            "now",
+            "assistant",
+            "hey google",
+            "okay google",
+            "ok google",
+            "okey google"
+        ],
+        "again": [
+            "again",
+            "repeat last command",
+            "repeat"
+        ],
+        "reload": [
+            "reload modules",
+            "reload commands",
+            "reload settings"
+        ]
+    },
+    "welcome_messages": [
+        "Assistant started",
+        "Hello!"
+    ],
+    "context_list": {
+        "BROWSER": [
+            "Microsoft Edge",
+            "Google Chrome",
+            "Microsoft​ Edge"
+        ],
+        "CMD": [
+            "python",
+            "cmd.exe",
+            "commands.py",
+            ".py"
+        ]
+    },
+    "numbers": [
+        "zero",
+        "one",
+        "two",
+        "three",
+        "four",
+        "five",
+        "six",
+        "seven",
+        "eight",
+        "nine",
+        "ten",
+        "eleven",
+        "thirteen",
+        "fourteen",
+        "fiveteen"
+    ],
+    "literals": {
+        "question mark": "?",
+        "final point": ".",
+        "line break": "\b\n",
+        "undescore": "_",
+        "open quotes": "\"",
+        "close quotes": "\"",
+        "slash": "/",
+        "numeral": "#",
+        "equal sign": "=",
+        "plus sign": "+",
+        "zero": "0",
+        "one": "1",
+        "two": "2",
+        "three": "3",
+        "four": "4",
+        "five": "5",
+        "six": "6",
+        "seven": "7",
+        "eight": "8",
+        "nine": "9",
+        "ten": "10",
+        "eleven": "11",
+        "thirteen": "12",
+        "fourteen": "13",
+        "fiveteen": "14"
+    }
+}
