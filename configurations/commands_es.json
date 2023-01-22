@@ -1,0 +1,201 @@
+{
+    "abrir la consola": {
+        "run_process": "cmd.exe",
+        "alternative": [
+            "abrir consola"
+        ]
+    },
+    "suspender computadora": {
+        "press": "{SLEEP}"
+    },
+    "escapar": {
+        "press": "{ESC}",
+        "alternative": [
+            "salir"
+        ]
+    },
+    "escribir {n}": {
+        "write": "{}",
+        "wait": true
+    },
+    "abrir nueva pestaña": {
+        "context": "BROWSER",
+        "press": "^t"
+    },
+    "cerrar pestaña": {
+        "press": "^w",
+        "context": "BROWSER"
+    },
+    "reabrir pestaña": {
+        "press": "^T",
+        "context": "BROWSER"
+    },
+    "recargar página": {
+        "press": "{BROWSER_REFRESH}",
+        "context": "BROWSER"
+    },
+    "ver la pestaña {n}": {
+        "ctrl_num": "{}",
+        "context": "BROWSER"
+    },
+    "ctrl {n}": {
+        "ctrl_num": "{}"
+    },
+    "la siguiente pestaña": {
+        "press": "^{TAB}",
+        "context": "BROWSER"
+    },
+    "la anterior pestaña": {
+        "press": "^+{TAB}",
+        "context": "BROWSER"
+    },
+    "pantalla completa": {
+        "context": "BROWSER",
+        "press": "{f}",
+        "alternative": [
+            "salir de pantalla completa"
+        ]
+    },
+    "seleccionar todo": {
+        "press": "^a"
+    },
+    "borrar": {
+        "press": "{BACKSPACE}"
+    },
+    "deshacer": {
+        "press": "^z"
+    },
+    "capturar región": {
+        "press": "#S",
+        "alternative": [
+            "capturar solo región"
+        ]
+    },
+    "enter": {
+        "press": "{ENTER}",
+        "alternative": [
+            "aceptar"
+        ]
+    },
+    "siguiente escritorio": {
+        "press": "^#{RIGHT}"
+    },
+    "anterior escritorio": {
+        "press": "^#{LEFT}"
+    },
+    "minimizar ventanas": {
+        "press": "#m"
+    },
+    "maximizar ventanas": {
+        "press": "!{TAB}",
+        "alternative": [
+            "maximizar las ventanas"
+        ]
+    },
+    "tomar una captura": {
+        "press": "#{PRINTSCREEN}"
+    },
+    "pasar página": {
+        "press": "{PGDN}"
+    },
+    "subir página": {
+        "press": "{PGUP}"
+    },
+    "buscar": {
+        "press": "^f"
+    },
+    "abajo {n} veces": {
+        "press": "{DOWN}"
+    },
+    "abajo": {
+        "press": "{DOWN}"
+    },
+    "arriba": {
+        "press": "{UP}",
+        "wait": true,
+        "voice": "enseguida"
+    },
+    "subir volumen en {n}": {
+        "press": "{VOLUME_UP}"
+    },
+    "bajar volumen en {n}": {
+        "press": "{VOLUME_DOWN}"
+    },
+    "silenciar sonido": {
+        "press": "{VOLUME_MUTE}",
+        "alternative": [
+            "silenciar sonidos",
+            "silenciar"
+        ]
+    },
+    "regresar sonido": {
+        "press": "{VOLUME_UP}"
+    },
+    "ir arriba": {
+        "press": "{HOME}"
+    },
+    "ir abajo": {
+        "press": "{END}"
+    },
+    "siguiente canción": {
+        "press": "{MEDIA_NEXT}"
+    },
+    "anterior canción": {
+        "press": "{MEDIA_PREV}"
+    },
+    "detener música": {
+        "press": "{MEDIA_PLAY_PAUSE}",
+        "alternative": [
+            "pausa",
+            "pausar",
+            "pausar la música",
+            "parar música"
+        ]
+    },
+    "play": {
+        "press": "{MEDIA_PLAY_PAUSE}",
+        "alternative": [
+            "reanudar el sonido",
+            "reanudar la música",
+            "reanudar el sonido"
+        ]
+    },
+    "reproducir música": {
+        "press": "{MEDIA_PLAY_PAUSE}"
+    },
+    "abrir el correo": {
+        "run_process": "outlook.exe"
+    },
+    "ir hacia atrás": {
+        "press": "{BROWSER_BACK}"
+    },
+    "refrescar": {
+        "press": "{F5}"
+    },
+    "cerrar ventana": {
+        "press": "!{F4}"
+    },
+    "abrir whatsapp": {
+        "run_process": "https://web.whatsapp.com/",
+        "voice": "abriendo whatsapp"
+    },
+    "abrir youtube": {
+        "run_process": "https://youtube.com",
+        "voice": "abriendo youtube"
+    },
+    "abrir el traductor": {
+        "run_process": "https://deepl.com"
+    },
+    "abrir el bloc de notas": {
+        "run_process": "notepad",
+        "alternative": [
+            "abrir bloc de notas"
+        ]
+    },
+    "abrir spotify": {
+        "run_process": "https://open.spotify.com/",
+        "alternative": [
+            "abre la música"
+        ]
+    }
+}

@@ -1,4 +1,5 @@
 import os
+import random
 import gc
 import signal
 from threading import Thread
@@ -7,11 +8,16 @@ import tkinter as tk
 import tkinter.font as font
 from tkinter import messagebox
 from speechsynth import speech
+
 from assistant import Assistant
 from command_processor import reload_commands_module
+from logger import logger
+from settings import Settings
+
 
 class SelectDevice(tk.Tk):
     """ Selection input audio device screen """
+
     def __init__(self):
         super().__init__()
         self.geometry("600x500")
@@ -32,7 +38,7 @@ class SelectDevice(tk.Tk):
         self.device_list.configure(
             background="skyblue4", foreground="white", font=('Aerial 13'))
 
-        if default_input:= self.get_default_input_device():
+        if default_input := self.get_default_input_device():
             self.device_list.itemconfig(default_input,
                                         {'bg': 'khaki3'})
             self.device_list.select_set(default_input)
@@ -47,7 +53,7 @@ class SelectDevice(tk.Tk):
 
     def select_device(self):
         for i in self.device_list.curselection():
-            print("[+] Selected: ", self.device_list.get(i), i)
+            logger.info(f"[+] Selected { self.device_list.get(i) } -> { i }")
             assistant_thread.INPUT_DEVICE_INDEX = i
             break
         self.destroy()
@@ -59,8 +65,10 @@ class SelectDevice(tk.Tk):
             return int(default_input_device[0][3])
         return False
 
+
 class GUI(Thread):
     """ float transcription text """
+
     def __init__(self):
         # Create main window
         self.root = tk.Tk()
@@ -77,7 +85,7 @@ class GUI(Thread):
         self.label_btn['font'] = font.Font(size=20)
 
         self.root.after(50, self.update_text)
-        self.root.wm_attributes("-topmost", 1) # top screen
+        self.root.wm_attributes("-topmost", 1)  # top screen
         self.root.update_idletasks()
         # Run appliction
         self.root.overrideredirect(1)
@@ -95,13 +103,13 @@ class GUI(Thread):
             label="Close", command=lambda: self.exit(need_confirm=True))
 
         self.label_btn.bind("<Button-3>", self.do_popup)
-        
+
         signal.signal(signal.SIGINT, self.traping)
         self.root.mainloop()
 
     def hide_transcription(self):
         self.label_btn.pack_forget()
-        
+
     def do_popup(self, event):
         try:
             self.menu.tk_popup(event.x_root, event.y_root)
@@ -131,7 +139,7 @@ class GUI(Thread):
                 'Confirm', 'Close the assistant?')
             if not confirmation:
                 return
-        print("[!] Bye...")
+        logger.info("Assistant closed by user")
         assistant_thread.terminate()
         self.root.destroy()
 
@@ -139,21 +147,22 @@ class GUI(Thread):
         exit()
         os.sys.exit(0)
 
+
 if __name__ == '__main__':
     # initialize assistant thread
     assistant_thread = Assistant()
     assistant_thread.INPUT_DEVICE_INDEX = None
-    
+
     if not assistant_thread.INPUT_DEVICE_INDEX:
         # init device selection window
         SelectDevice()
-        # collect gargabed from closed device selection window thread to avoid future 
+        # collect gargabed from closed device selection window thread to avoid future
         # purgue that can accidentadlly kill the gui main thread
-        gc.collect() 
-        
+        gc.collect()
+
     assistant_thread.daemon = True  # set daemon
     assistant_thread.start()
-    speech("asistente iniciado")
+    speech(random.choice(Settings.welcome_messages))
     # initialize gui and join main thread
     gui = GUI()
     gui.start()

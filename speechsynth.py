@@ -1,21 +1,35 @@
 import os
-import playsound 
-from gtts import gTTS
+import time
+import tempfile
 from threading import Thread
 
-file_count = 0
+import playsound
+from gtts import gTTS
+from logger import logger
+from settings import Settings
+
 
 def play_sound_file(file, text):
-    print(f"[+] Playing text '{text}'")
+    logger.info(f"Playing text audio '{text}' ( { file } )")
     playsound.playsound(file)
     os.remove(file)
-    
 
-def speech(text, lang="es"):
-    global file_count
-    file_name = f"file{file_count}.mp3"
-    s = gTTS(text=text, lang="es", slow=False)
-    s.save(file_name)
+
+def speech(text, lang=Settings.lang):
+    # Generate temporal file
+    with tempfile.NamedTemporaryFile(delete=True, suffix=".mp3") as temp:
+        file_name = temp.name
+
+    # Generate synthetized voice
+    syntvoice = gTTS(text=text, lang=lang, slow=False)
+    syntvoice.save(file_name)
+
+    # Play it in a thread apart
     thread = Thread(target=play_sound_file, args=(file_name, text, ))
     thread.start()
-    file_count += 1
+
+
+if __name__ == "__main__":
+    speech("Hola Mundo! Espero que esté todo en orden :)", "es")
+    time.sleep(5)
+    speech("Hello world, i hope you fine :) ", "en")

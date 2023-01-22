@@ -1,0 +1,69 @@
+{
+    "welcome_message": [
+        "Asistente iniciado",
+        "Hola!"
+    ],
+    "hotwords": [
+        "jarvis",
+        "alexa",
+        "comando",
+        "ahora",
+        "asistente",
+        "hey google",
+        "okay google",
+        "ok google",
+        "okey google"
+    ],
+    "again_words": [
+        "otra",
+        "otra vez",
+        "repetir comando"
+    ],
+    "reload_words": [
+        "recargar módulos",
+        "recargar comandos"
+    ],
+    "context_list": {
+        "BROWSER": [
+            "Microsoft Edge",
+            "Google Chrome",
+            "Microsoft​ Edge"
+        ],
+        "CMD": [
+            "python",
+            "cmd.exe",
+            "commands.py",
+            ".py"
+        ]
+    },
+    "literals": {
+        "signo de pregunta": "?",
+        "punto final": ".",
+        "salto de línea": "\b\n",
+        "guión bajo": "_",
+        "abrir comilla": "\"",
+        "cerrar comilla": "\"",
+        "slash": "/",
+        "numeral": "#",
+        "signo igual": "=",
+        "signo de suma": "+"
+    },
+    "numbers": [
+        "cero",
+        "uno",
+        "dos",
+        "tres",
+        "cuatro",
+        "cinco",
+        "seis",
+        "siete",
+        "ocho",
+        "nueve",
+        "diez",
+        "once",
+        "doce",
+        "trece",
+        "catorce",
+        "quince"
+    ]
+}
