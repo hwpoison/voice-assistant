@@ -2,3 +2,6 @@ __pycache__/
 model/
 general.log
 .vscode
+build/
+dist/
+voiceAssistant.spec

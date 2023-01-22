@@ -46,7 +46,8 @@
         "slash": "/",
         "numeral": "#",
         "signo igual": "=",
-        "signo de suma": "+"
+        "signo de suma": "+",
+        "espacio": " "
     },
     "numbers": [
         "cero",

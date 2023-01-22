@@ -117,7 +117,7 @@ def intent(entry, check_hotword=True) -> bool:
             return False
         command = filter_sentence
         logger.info("Hotword detected")
-
+        
     # special reload words
     if command in Settings.reload_words:
         logger.info("Reloading 'settings' module.")
@@ -149,7 +149,8 @@ def intent(entry, check_hotword=True) -> bool:
     functions = {
         'run_process': utils.run_process,
         'press': utils.press_keys,
-        'ctrl_num': utils.ctrl_num
+        'ctrl_num': utils.ctrl_num,
+        'write': utils.press_write
     }
 
     for function_name, function in functions.items():

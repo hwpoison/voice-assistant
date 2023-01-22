@@ -1,4 +1,3 @@
-import os
 import time
 import tempfile
 from threading import Thread
@@ -12,7 +11,6 @@ from settings import Settings
 def play_sound_file(file, text):
     logger.info(f"Playing text audio '{text}' ( { file } )")
     playsound.playsound(file)
-    os.remove(file)
 
 
 def speech(text, lang=Settings.lang):
